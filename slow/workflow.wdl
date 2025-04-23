@@ -7,7 +7,6 @@ task sum_gaps {
 
   command <<<
     gzip -d --stdout '~{assembly}' | \
-        grep --invert-match '>' | \
         grep -o 'N' | \
         wc -l
   >>>
