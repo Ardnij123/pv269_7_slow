@@ -13,6 +13,7 @@ task sum_gaps {
 
   runtime {
     docker: "quay.io/biocontainers/gzip:1.11"
+    preemptible: 1
   }
 
   output {
