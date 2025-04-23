@@ -2,4 +2,7 @@ version: 1.2
 workflows:
   - name: countNsSlow_matuska
     subclass: WDL
-    primaryDescriptorPath: /workflow.wdl
+    primaryDescriptorPath: /slow/workflow.wdl
+  - name: countNsFast_matuska
+    subclass: WDL
+    primaryDescriptorPath: /fast/workflow.wdl
