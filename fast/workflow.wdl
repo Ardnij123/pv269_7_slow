@@ -15,6 +15,7 @@ task split_fasta {
     disks: "local-disk 20 SSD"
     cpu: 6
     memory: "8 GB"
+    preemptible: 1
   }
 
   output {
