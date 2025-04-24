@@ -51,7 +51,7 @@ task sum {
   }
   
   command <<<
-  printf ~{sep(" ", ints)} | awk '{tot=0; for(i=1;i<=NF;i++) tot+=$i; print tot}'
+  echo '~{sep=" " ints}' | awk '{tot=0; for(i=1;i<=NF;i++) tot+=$i; print tot}'
   >>>
   
   output {
@@ -70,7 +70,7 @@ workflow sum_gaps_matuska {
   }
 
   scatter (assembly_file in split_fasta.assembly_files) {
-    sum_gaps {
+    call sum_gaps {
 			input:
 			assembly = assembly_file
 		}
