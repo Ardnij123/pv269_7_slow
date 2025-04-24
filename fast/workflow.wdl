@@ -44,15 +44,20 @@ task sum_gaps {
 }
 
 # Taken from https://github.com/openwdl/wdl/blob/wdl-1.2/SPEC.md#comments
-# example sum_task.wdl
+# example sum_task.wdl, editted to conform to WDL version 1.0
 task sum {
   input {
     Array[Int]+ ints
   }
   
   command <<<
-  echo '~{sep=" " ints}' | awk '{tot=0; for(i=1;i<=NF;i++) tot+=$i; print tot}'
+  printf '~{sep=" " ints}' | awk '{tot=0; for(i=1;i<=NF;i++) tot+=$i; print tot}'
   >>>
+
+	runtime {
+		docker: "ubuntu:latest"
+		preemptible: 1
+	}
   
   output {
     Int total = read_int(stdout())
