@@ -12,6 +12,9 @@ task split_fasta {
   runtime {
     docker: "staphb/seqkit:latest"
     max_retries: 3
+    disks: "local-disk 20 SSD"
+    cpu: 4
+    memory: "8 GB"
   }
 
   output {
