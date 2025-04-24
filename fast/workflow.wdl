@@ -6,13 +6,12 @@ task split_fasta {
   }
 
   command <<<
-    seqkit split --by-part 100 --out-dir 'assembly_parts' '~{assembly}'
+    seqkit split --by-part 100 --out-dir 'assembly_parts' --threads 1 '~{assembly}'
   >>>
 
   runtime {
     docker: "staphb/seqkit:latest"
-    disks: "10GB"
-    max_retries: 10
+    max_retries: 3
   }
 
   output {
