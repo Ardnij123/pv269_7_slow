@@ -1,14 +1,36 @@
 version 1.0
 
+task split_fasta {
+  input {
+    File assembly
+  }
+
+  command <<<
+    seqkit split --by-part 100 --out-dir 'assembly_parts' '~{assembly}'
+  >>>
+
+  runtime {
+    docker: "staphb/seqkit:latest"
+  }
+
+  output {
+    Array[File] assembly_files = glob("assembly_parts/*")
+    Int num_parts = length(assembly_files)
+  }
+}
+
 task sum_gaps {
   input {
     File assembly
   }
 
   command <<<
-    gzip -d --stdout '~{assembly}' | \
-        grep -o 'unzipped_assembly' | \
-        wc -l
+    assembly='~{assembly}'
+    if [ "${assembly##*.}" == 'gz' ]; then
+      gzip -d --stdout '~{assembly}'
+    else
+      cat '~{assembly}'
+    fi | grep -o 'N' | wc -l
   >>>
 
   runtime {
@@ -17,7 +39,23 @@ task sum_gaps {
   }
 
   output {
-    String num_gaps = read_string(stdout())
+    Int num_gaps = read_int(stdout())
+  }
+}
+
+# Taken from https://github.com/openwdl/wdl/blob/wdl-1.2/SPEC.md#comments
+# example sum_task.wdl
+task sum {
+  input {
+    Array[Int]+ ints
+  }
+  
+  command <<<
+  printf ~{sep(" ", ints)} | awk '{tot=0; for(i=1;i<=NF;i++) tot+=$i; print tot}'
+  >>>
+  
+  output {
+    Int total = read_int(stdout())
   }
 }
 
@@ -26,12 +64,24 @@ workflow sum_gaps_matuska {
     File assembly
   }
 
-  call sum_gaps {
+  call split_fasta {
     input:
     assembly = assembly
   }
 
+  scatter (assembly_file in split_fasta.assembly_files) {
+    sum_gaps {
+			input:
+			assembly = assembly_file
+		}
+  }
+
+	call sum {
+		input:
+		ints = sum_gaps.num_gaps
+	}
+
   output {
-    String num_gaps = sum_gaps.num_gaps
+    Int num_gaps = sum.total
   }
 }
