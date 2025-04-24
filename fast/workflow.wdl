@@ -11,6 +11,7 @@ task split_fasta {
 
   runtime {
     docker: "staphb/seqkit:latest"
+    max_retries: 4
   }
 
   output {
@@ -87,6 +88,6 @@ workflow sum_gaps_matuska {
 	}
 
   output {
-    Int num_gaps = sum.total
+    Int num_gaps_fast = sum.total
   }
 }
