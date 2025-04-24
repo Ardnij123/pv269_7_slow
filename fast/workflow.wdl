@@ -11,6 +11,7 @@ task split_fasta {
 
   runtime {
     docker: "staphb/seqkit:latest"
+    disks: 8
     max_retries: 4
   }
 
